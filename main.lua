@@ -1,8 +1,8 @@
 function love.load()
   grid = {}
-  grid.cols = 16 * 8
-  grid.rows = 10 * 8
-  grid.size = 8
+  grid.cols = 32 * 8
+  grid.rows = 50 * 8
+  grid.size = 4
   grid.gutter = 2
 
   color = {}
@@ -48,14 +48,14 @@ function love.load()
     for i,v in ipairs(organisms) do
       v.aliveNeighbors = 0
 
+      if v.col > 0 and v.row > 0 and organisms[i - grid.cols - 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- northwest
       if v.row > 0 and organisms[i - grid.cols].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- north
-      if v.row > 0 and v.col < grid.cols - 1 and organisms[i - grid.cols + 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- north east
-      if v.col < grid.cols - 1 and organisms[i + 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- east
-      if v.row < grid.rows - 1 and v.col < grid.cols - 1 and organisms[i + grid.cols].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- south east
-      if v.row < grid.rows - 1 and organisms[i + grid.cols].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- south
-      if v.row < grid.rows - 1 and v.col > 0 and organisms[i + grid.cols - 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- south west
+      if v.col < grid.cols - 1 and v.row > 0 and organisms[i - grid.cols + 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- northeast
       if v.col > 0 and organisms[i - 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- west
-      if v.row > 0 and v.col > 0 and organisms[i - grid.cols - 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- north west
+      if v.col < grid.cols - 1 and organisms[i + 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- east
+      if v.col > 0 and v.row < grid.rows - 1 and organisms[i + grid.cols - 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- southwest
+      if v.row < grid.rows - 1 and organisms[i + grid.cols].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- south
+      if v.col < grid.cols - 1 and v.row < grid.rows - 1 and organisms[i + grid.cols + 1].isAlive then v.aliveNeighbors = v.aliveNeighbors + 1 end -- southeast
     end
   end
 
