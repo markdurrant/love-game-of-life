@@ -1,6 +1,6 @@
 # LÖVE Game of Life
 
-A simple implimentation of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) created in [LÖVE](https://love2d.org/).
+A simple implementation of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) created in [LÖVE](https://love2d.org/).
 
 ## Setup
 Make sure you have [Lua](http://www.lua.org/) & [LÖVE](https://love2d.org/) installed.
