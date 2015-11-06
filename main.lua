@@ -1,8 +1,8 @@
 function love.load()
   grid = {}
-  grid.cols = 32 * 8
-  grid.rows = 50 * 8
-  grid.size = 4
+  grid.cols = 16 * 8
+  grid.rows = 10 * 8
+  grid.size = 8
   grid.gutter = 2
 
   color = {}
