@@ -2,10 +2,10 @@ function love.load()
   -- grid dimensions
   -- ===============
   grid = {}
-  grid.cols = 5
-  grid.rows = 5
-  grid.size = 80 -- width & height of grid cells in pixels
-  grid.gutter = 10 -- size of gap between grid cells in pixels
+  grid.cols = 16 * 6
+  grid.rows = 10 * 6
+  grid.size = 12 -- width & height of grid cells in pixels
+  grid.gutter = 4 -- size of gap between grid cells in pixels
 
   -- color definitions
   -- ==================
@@ -43,7 +43,7 @@ function love.load()
   end
 
   -- create 'blinker' pattern
-  organismsGroup[12].isAlive, organismsGroup[13].isAlive, organismsGroup[14].isAlive = true, true, true
+  organismsGroup[112].isAlive, organismsGroup[113].isAlive, organismsGroup[114].isAlive = true, true, true
 
   -- print all organisms for dev
   function printAllOrganisms( ... )
@@ -58,7 +58,7 @@ function love.load()
   end
 
   -- cooldown counter for printAllOrganisms
-  printCooldown = 0
+  keyCooldown = 0
 
 
   -- count the alive neighbors of an organism
@@ -115,24 +115,31 @@ function love.load()
   end
 
   iterationTimer = 0
+
+  isPaused = true
 end
 
 function love.update(dt)
   iterationTimer = iterationTimer + dt
+  keyCooldown = keyCooldown + dt
 
-  if iterationTimer > 0.25 then
+  if iterationTimer > 0.25 and isPaused == false then
     countAllNeighbors()
     switchAllStates()
     iterationTimer = 0
   end
 
+  if love.keyboard.isDown(" ") and keyCooldown > 0.25 then
+    if isPaused == true then isPaused = false else isPaused = true end
+    print(isPaused)
+    keyCooldown = 0
+  end
+
   -- print details of all orgainsims
   -- ===============================
-  printCooldown = printCooldown + dt
-
-  if love.keyboard.isDown("p") and printCooldown > 0.25 then
+  if love.keyboard.isDown("p") and keyCooldown > 0.25 then
     printAllOrganisms()
-    printCooldown = 0
+    keyCooldown = 0
   end
 end
 
