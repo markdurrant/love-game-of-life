@@ -51,7 +51,7 @@ function love.load()
       -- split every row
       if (i - 1) % 5 == 0 then print("---") end
       -- print cell
-      print("C" .. v.col .. "_R" .. v.row .. "_alive:" .. tostring(v.isAlive))
+      print("C" .. v.col .. " R" .. v.row .. " | alive: " .. tostring(v.isAlive) .. " | alive neighbors: " .. v.aliveNeighbors)
       -- split last cell
       if i == table.getn(organismsGroup) then print("---") end
     end
@@ -60,12 +60,74 @@ function love.load()
   -- cooldown counter for printAllOrganisms
   printCooldown = 0
 
-  function countNeighbors()
 
+  -- count the alive neighbors of an organism
+  -- ========================================
+  function countNeighbors(index, organism)
+    local aliveNeighbors = 0
+
+    function incrementAliveNeighbors()
+      aliveNeighbors = aliveNeighbors + 1
+    end
+
+    -- north
+    if organismsGroup[index - grid.cols] and organismsGroup[index - grid.cols].isAlive == true then incrementAliveNeighbors() end
+    -- north east
+    if organismsGroup[index - grid.cols + 1] and organismsGroup[index - grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
+    -- east
+    if organismsGroup[index + 1] and organismsGroup[index + 1].isAlive == true then incrementAliveNeighbors() end
+    -- south east
+    if organismsGroup[index + grid.cols + 1] and organismsGroup[index + grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
+    -- south
+    if organismsGroup[index + grid.cols] and organismsGroup[index + grid.cols].isAlive == true then incrementAliveNeighbors() end
+    -- south west
+    if organismsGroup[index + grid.cols - 1] and organismsGroup[index + grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
+    -- west
+    if organismsGroup[index - 1] and organismsGroup[index - 1].isAlive == true then incrementAliveNeighbors() end
+    -- north west
+    if organismsGroup[index - grid.cols - 1] and organismsGroup[index - grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
+
+    organism.aliveNeighbors = aliveNeighbors
   end
+
+  function countAllNeighbors()
+    for i, v in ipairs(organismsGroup) do
+      countNeighbors(i, v)
+    end
+  end
+
+  -- kill or revive an organism based on its neighbors
+  -- =================================================
+  function switchState(organism)
+    if organism.isAlive == false and organism.aliveNeighbors == 3 then -- if organism is dead and has 3 live neighbors revive
+      organism.isAlive = true
+    elseif organism.isAlive == true and organism.aliveNeighbors < 2 then -- if organism is alive and has less than 2 live neighbors kill it
+      organism.isAlive = false
+    elseif organism.isAlive == true and organism.aliveNeighbors > 3 then -- if organism is alive and has more than 4 live neighbors kill it
+      organism.isAlive = false
+    end
+  end
+
+  function switchAllStates()
+    for i, v in ipairs(organismsGroup) do
+      switchState(v)
+    end
+  end
+
+  iterationTimer = 0
 end
 
 function love.update(dt)
+  iterationTimer = iterationTimer + dt
+
+  if iterationTimer > 0.25 then
+    countAllNeighbors()
+    switchAllStates()
+    iterationTimer = 0
+  end
+
+  -- print details of all orgainsims
+  -- ===============================
   printCooldown = printCooldown + dt
 
   if love.keyboard.isDown("p") and printCooldown > 0.25 then
