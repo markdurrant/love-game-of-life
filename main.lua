@@ -8,7 +8,7 @@ function love.load()
   grid.gutter = 4 -- size of gap between grid cells in pixels
 
   -- color definitions
-  -- ==================
+  -- =================
   color = {}
   color.background = {0, 0, 0}
   color.alive = {150, 150, 255}
@@ -18,17 +18,18 @@ function love.load()
   -- =============
   love.window.setMode(grid.cols * grid.size + grid.gutter, grid.rows * grid.size + grid.gutter)
 
+  -- game state setup
+  -- ================
+  game = {}
+  game.isPaused = true -- is the game paused
+  game.iterationSpeed = 0.25 -- speed of each itteration in seconds
+  game.iterationTimer = 0 -- itteration timer
+  game.keySpeed = 0.25 -- keyboard repeat speed
+  game.keyTimer = 0 -- keyboard repeat timer
+
   -- organisms setup
   -- ===============
   organismsGroup = {}
-
-  function randomBoolean()
-    if love.math.random() > 0.5 then
-      return true
-    else
-      return false
-    end
-  end
 
   -- poulate organisms group
   for r = 1, grid.rows do
@@ -57,91 +58,77 @@ function love.load()
     end
   end
 
-  -- cooldown counter for printAllOrganisms
-  keyCooldown = 0
-
-
-  -- count the alive neighbors of an organism
-  -- ========================================
-  function countNeighbors(index, organism)
+  -- count the alive neighbors of all organisms
+  -- ==========================================
+  function countAllNeighbors()
     local aliveNeighbors = 0
 
-    function incrementAliveNeighbors()
+    local function incrementAliveNeighbors()
       aliveNeighbors = aliveNeighbors + 1
     end
 
-    -- north
-    if organismsGroup[index - grid.cols] and organismsGroup[index - grid.cols].isAlive == true then incrementAliveNeighbors() end
-    -- north east
-    if organismsGroup[index - grid.cols + 1] and organismsGroup[index - grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
-    -- east
-    if organismsGroup[index + 1] and organismsGroup[index + 1].isAlive == true then incrementAliveNeighbors() end
-    -- south east
-    if organismsGroup[index + grid.cols + 1] and organismsGroup[index + grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
-    -- south
-    if organismsGroup[index + grid.cols] and organismsGroup[index + grid.cols].isAlive == true then incrementAliveNeighbors() end
-    -- south west
-    if organismsGroup[index + grid.cols - 1] and organismsGroup[index + grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
-    -- west
-    if organismsGroup[index - 1] and organismsGroup[index - 1].isAlive == true then incrementAliveNeighbors() end
-    -- north west
-    if organismsGroup[index - grid.cols - 1] and organismsGroup[index - grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
-
-    organism.aliveNeighbors = aliveNeighbors
-  end
-
-  function countAllNeighbors()
     for i, v in ipairs(organismsGroup) do
-      countNeighbors(i, v)
+      aliveNeighbors = 0
+
+      -- north
+      if organismsGroup[i - grid.cols] and organismsGroup[i - grid.cols].isAlive == true then incrementAliveNeighbors() end
+      -- north east
+      if organismsGroup[i - grid.cols + 1] and organismsGroup[i - grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
+      -- east
+      if organismsGroup[i + 1] and organismsGroup[i + 1].isAlive == true then incrementAliveNeighbors() end
+      -- south east
+      if organismsGroup[i + grid.cols + 1] and organismsGroup[i + grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
+      -- south
+      if organismsGroup[i + grid.cols] and organismsGroup[i + grid.cols].isAlive == true then incrementAliveNeighbors() end
+      -- south west
+      if organismsGroup[i + grid.cols - 1] and organismsGroup[i + grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
+      -- west
+      if organismsGroup[i - 1] and organismsGroup[i - 1].isAlive == true then incrementAliveNeighbors() end
+      -- north west
+      if organismsGroup[i - grid.cols - 1] and organismsGroup[i - grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
+
+      v.aliveNeighbors = aliveNeighbors
     end
   end
 
   -- kill or revive an organism based on its neighbors
   -- =================================================
-  function switchState(organism)
-    if organism.isAlive == false and organism.aliveNeighbors == 3 then -- if organism is dead and has 3 live neighbors revive
-      organism.isAlive = true
-    elseif organism.isAlive == true and organism.aliveNeighbors < 2 then -- if organism is alive and has less than 2 live neighbors kill it
-      organism.isAlive = false
-    elseif organism.isAlive == true and organism.aliveNeighbors > 3 then -- if organism is alive and has more than 4 live neighbors kill it
-      organism.isAlive = false
-    end
-  end
-
   function switchAllStates()
     for i, v in ipairs(organismsGroup) do
-      switchState(v)
+       -- if organism is dead and has 3 live neighbors revive
+      if v.isAlive == false and v.aliveNeighbors == 3 then v.isAlive = true
+      -- if v is alive and has less than 2 live neighbors kill it
+      elseif v.isAlive == true and v.aliveNeighbors < 2 then  v.isAlive = false
+      -- if v is alive and has more than 4 live neighbors kill it
+      elseif v.isAlive == true and v.aliveNeighbors > 3 then v.isAlive = false end
     end
   end
-
-  iterationTimer = 0
-
-  isPaused = true
-end
+end -- love.load()
 
 function love.update(dt)
-  iterationTimer = iterationTimer + dt
-  keyCooldown = keyCooldown + dt
+  game.iterationTimer = game.iterationTimer + dt
+  game.keyTimer = game.keyTimer + dt
 
-  if iterationTimer > 0.25 and isPaused == false then
+  -- each itteration count neighbors & switch states
+  -- ===============================================
+  if game.iterationTimer > game.iterationSpeed and game.isPaused == false then
     countAllNeighbors()
     switchAllStates()
-    iterationTimer = 0
+    game.iterationTimer = 0
   end
 
-  if love.keyboard.isDown(" ") and keyCooldown > 0.25 then
-    if isPaused == true then isPaused = false else isPaused = true end
-    print(isPaused)
-    keyCooldown = 0
+  -- keyboard handler
+  -- ===============================================
+  if love.keyboard.isDown(" ") and game.keyTimer > game.keySpeed then
+    if game.isPaused == true then game.isPaused = false else game.isPaused = true end
+    game.keyTimer = 0
   end
 
-  -- print details of all orgainsims
-  -- ===============================
-  if love.keyboard.isDown("p") and keyCooldown > 0.25 then
+  if love.keyboard.isDown("p") and game.keyTimer > game.keySpeed then
     printAllOrganisms()
-    keyCooldown = 0
+    game.keyTimer = 0
   end
-end
+end --love.update
 
 function love.draw()
   -- draw organisms
@@ -166,4 +153,4 @@ function love.draw()
     love.graphics.setLineWidth(grid.gutter)
     love.graphics.rectangle("line", x, y, grid.size, grid.size)
   end
-end
+end -- love.draw
