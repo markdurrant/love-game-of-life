@@ -43,18 +43,13 @@ function love.load()
     end
   end
 
-  -- create 'blinker' pattern
-  organismsGroup[112].isAlive, organismsGroup[113].isAlive, organismsGroup[114].isAlive = true, true, true
-
-  -- print all organisms for dev
-  function printAllOrganisms( ... )
-    for i,v in pairs(organismsGroup) do
-      -- split every row
-      if (i - 1) % 5 == 0 then print("---") end
-      -- print cell
-      print("C" .. v.col .. " R" .. v.row .. " | alive: " .. tostring(v.isAlive) .. " | alive neighbors: " .. v.aliveNeighbors)
-      -- split last cell
-      if i == table.getn(organismsGroup) then print("---") end
+  -- set random alive/dead
+  -- =====================
+  function randomiseBoard()
+    for i, v in ipairs(organismsGroup) do
+      if love.math.random() > 0.7 then
+        v.isAlive = true
+      end
     end
   end
 
@@ -101,6 +96,19 @@ function love.load()
       elseif v.isAlive == true and v.aliveNeighbors < 2 then  v.isAlive = false
       -- if v is alive and has more than 4 live neighbors kill it
       elseif v.isAlive == true and v.aliveNeighbors > 3 then v.isAlive = false end
+    end
+  end
+
+  -- print all organisms for dev
+  -- ===========================
+  function printAllOrganisms( ... )
+    for i,v in pairs(organismsGroup) do
+      -- split every row
+      if (i - 1) % 5 == 0 then print("---") end
+      -- print cell
+      print("C" .. v.col .. " R" .. v.row .. " | alive: " .. tostring(v.isAlive) .. " | alive neighbors: " .. v.aliveNeighbors)
+      -- split last cell
+      if i == table.getn(organismsGroup) then print("---") end
     end
   end
 end -- love.load()
