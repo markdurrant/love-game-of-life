@@ -2,10 +2,10 @@ function love.load()
   -- grid dimensions
   -- ===============
   grid = {}
-  grid.cols = 16 * 6
-  grid.rows = 10 * 6
-  grid.size = 12 -- width & height of grid cells in pixels
-  grid.gutter = 4 -- size of gap between grid cells in pixels
+  grid.cols = 16 * 4
+  grid.rows = 10 * 4
+  grid.size = 18 -- width & height of grid cells in pixels
+  grid.gutter = 6 -- size of gap between grid cells in pixels
 
   -- color definitions
   -- =================
@@ -22,7 +22,7 @@ function love.load()
   -- ================
   game = {}
   game.isPaused = true -- is the game paused
-  game.iterationSpeed = 0.25 -- speed of each itteration in seconds
+  game.iterationSpeed = 1 / 15 -- speed of each itteration in seconds
   game.iterationTimer = 0 -- itteration timer
   game.keySpeed = 0.25 -- keyboard repeat speed
   game.keyTimer = 0 -- keyboard repeat timer
@@ -47,11 +47,13 @@ function love.load()
   -- =====================
   function randomiseBoard()
     for i, v in ipairs(organismsGroup) do
-      if love.math.random() > 0.7 then
+      if love.math.random() > 0.5 then
         v.isAlive = true
       end
     end
   end
+
+  randomiseBoard()
 
   -- count the alive neighbors of all organisms
   -- ==========================================
