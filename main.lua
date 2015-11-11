@@ -30,7 +30,7 @@ function love.load()
 
   -- welcome message
   -- ===============
-  print("*************************************************************************\n**** Press space to play/pause. Press 'p' to print status to console ****\n*************************************************************************")
+  print("\n*************************************************************************\n**** Press space to play/pause. Press 'p' to print status to console ****\n*************************************************************************")
 
 
   -- organisms setup
@@ -53,7 +53,7 @@ function love.load()
   -- =====================
   function randomiseBoard()
     for i, v in ipairs(organismsGroup) do
-      if love.math.random() > 0.5 then
+      if love.math.random() > 0.8 then
         v.isAlive = true
       end
     end
@@ -102,7 +102,7 @@ function love.load()
       if v.isAlive == false and v.aliveNeighbors == 3 then v.isAlive = true
       -- if v is alive and has less than 2 live neighbors kill it
       elseif v.isAlive == true and v.aliveNeighbors < 2 then  v.isAlive = false
-      -- if v is alive and has more than 4 live neighbors kill it
+      -- if v is alive and has more than 3 live neighbors kill it
       elseif v.isAlive == true and v.aliveNeighbors > 3 then v.isAlive = false end
     end
   end
