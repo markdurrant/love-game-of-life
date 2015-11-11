@@ -2,10 +2,10 @@ function love.load()
   -- grid dimensions
   -- ===============
   grid = {}
-  grid.cols = 16 * 4
-  grid.rows = 10 * 4
-  grid.size = 18 -- width & height of grid cells in pixels
-  grid.gutter = 6 -- size of gap between grid cells in pixels
+  grid.cols = 16 * 6
+  grid.rows = 10 * 6
+  grid.size = 12 -- width & height of grid cells in pixels
+  grid.gutter = 4 -- size of gap between grid cells in pixels
 
   -- color definitions
   -- =================
@@ -26,6 +26,12 @@ function love.load()
   game.iterationTimer = 0 -- itteration timer
   game.keySpeed = 0.25 -- keyboard repeat speed
   game.keyTimer = 0 -- keyboard repeat timer
+
+
+  -- welcome message
+  -- ===============
+  print("*************************************************************************\n**** Press space to play/pause. Press 'p' to print status to console ****\n*************************************************************************")
+
 
   -- organisms setup
   -- ===============
