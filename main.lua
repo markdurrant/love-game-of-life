@@ -13,6 +13,7 @@ function love.load()
   color.background = {0, 0, 0}
   color.alive = {150, 150, 255}
   color.dead = {30, 30, 50}
+  color.trail = {70, 70, 80}
 
   -- display setup
   -- =============
@@ -26,6 +27,7 @@ function love.load()
   game.iterationTimer = 0 -- itteration timer
   game.keySpeed = 0.25 -- keyboard repeat speed
   game.keyTimer = 0 -- keyboard repeat timer
+  game.trailsOn = true -- trails on
 
 
   -- welcome message
@@ -44,6 +46,7 @@ function love.load()
       organism.col = c
       organism.row = r
       organism.isAlive = false
+      organism.hasbeenAlive = false
       organism.aliveNeighbors = 0
       table.insert(organismsGroup, organism)
     end
@@ -104,7 +107,8 @@ function love.load()
   -- =================================================
   function switchAllStates()
     for i, v in ipairs(organismsGroup) do
-       -- if organism is dead and has 3 live neighbors revive
+      if v.isAlive == true then v.hasbeenAlive = true end
+      -- if organism is dead and has 3 live neighbors revive
       if v.isAlive == false and v.aliveNeighbors == 3 then v.isAlive = true
       -- if v is alive and has less than 2 live neighbors kill it
       elseif v.isAlive == true and v.aliveNeighbors < 2 then  v.isAlive = false
@@ -146,6 +150,11 @@ function love.update(dt)
     game.keyTimer = 0
   end
 
+  if love.keyboard.isDown("t") and game.keyTimer > game.keySpeed then
+    if game.trailsOn == true then game.trailsOn = false else game.trailsOn = true end
+    game.keyTimer = 0
+  end
+
   if love.keyboard.isDown("p") and game.keyTimer > game.keySpeed then
     printAllOrganisms()
     game.keyTimer = 0
@@ -164,7 +173,9 @@ function love.draw()
     if v.isAlive == true then
       love.graphics.setColor(color.alive)
     else
-      love.graphics.setColor(color.dead)
+      if v.hasbeenAlive == true and game.trailsOn == true then
+      love.graphics.setColor(color.trail) else
+      love.graphics.setColor(color.dead) end
     end
 
     -- draw organism rectangle
