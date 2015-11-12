@@ -72,24 +72,30 @@ function love.load()
 
     for i, v in ipairs(organismsGroup) do
       aliveNeighbors = 0
-
+      a = 0
+      b = 0
+      c = 0
+      d = 0
+      if organismsGroup[i].row == 1 then a = (grid.cols * grid.rows) end
+      if organismsGroup[i].col == 1 then b = grid.cols end
+      if organismsGroup[i].col == grid.cols then c = -grid.cols end
+      if organismsGroup[i].row == grid.rows then d = -(grid.cols * grid.rows) end
       -- north
-      if organismsGroup[i - grid.cols] and organismsGroup[i - grid.cols].isAlive == true then incrementAliveNeighbors() end
+      if organismsGroup[i - grid.cols + a].isAlive == true then incrementAliveNeighbors() end
       -- north east
-      if organismsGroup[i - grid.cols + 1] and organismsGroup[i - grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
+      if organismsGroup[i - grid.cols + 1 + a + c].isAlive == true then incrementAliveNeighbors() end
       -- east
-      if organismsGroup[i + 1] and organismsGroup[i + 1].isAlive == true then incrementAliveNeighbors() end
+      if organismsGroup[i + 1 + c].isAlive == true then incrementAliveNeighbors() end
       -- south east
-      if organismsGroup[i + grid.cols + 1] and organismsGroup[i + grid.cols + 1].isAlive == true then incrementAliveNeighbors() end
+      if organismsGroup[i + grid.cols + 1 + c + d].isAlive == true then incrementAliveNeighbors() end
       -- south
-      if organismsGroup[i + grid.cols] and organismsGroup[i + grid.cols].isAlive == true then incrementAliveNeighbors() end
+      if organismsGroup[i + grid.cols + d].isAlive == true then incrementAliveNeighbors() end
       -- south west
-      if organismsGroup[i + grid.cols - 1] and organismsGroup[i + grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
+      if organismsGroup[i + grid.cols - 1 + b + d].isAlive == true then incrementAliveNeighbors() end
       -- west
-      if organismsGroup[i - 1] and organismsGroup[i - 1].isAlive == true then incrementAliveNeighbors() end
+      if organismsGroup[i - 1 + b].isAlive == true then incrementAliveNeighbors() end
       -- north west
-      if organismsGroup[i - grid.cols - 1] and organismsGroup[i - grid.cols - 1].isAlive == true then incrementAliveNeighbors() end
-
+      if organismsGroup[i - grid.cols - 1 + a + b].isAlive == true then incrementAliveNeighbors() end
       v.aliveNeighbors = aliveNeighbors
     end
   end
