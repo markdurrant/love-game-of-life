@@ -1,4 +1,6 @@
 function love.load()
+  hsl = require("hsl")
+
   -- grid dimensions
   -- ===============
   grid = {}
@@ -10,11 +12,12 @@ function love.load()
   -- color definitions
   -- =================
   color = {}
-  color.background = {0, 0, 0}
-  color.alive = {150, 150, 255}
-  color.old = {90, 90, 255}
-  color.dead = {30, 30, 50}
-  color.trail = {70, 70, 80}
+  color.background = {hsl.toRgb(0, 0, 0)}
+  color.trail = {hsl.toRgb(0, 0, 15)}
+  color.alive = {hsl.toRgb(220, 100, 60)}
+  color.old = {hsl.toRgb(220, 100, 40)}
+  color.dead = {hsl.toRgb(0, 0, 10)}
+
 
   -- display setup
   -- =============
@@ -24,11 +27,11 @@ function love.load()
   -- ================
   game = {}
   game.isPaused = true -- is the game paused
+  game.trailsOn = true -- trails on
   game.iterationSpeed = 1 / 15 -- speed of each itteration in seconds
   game.iterationTimer = 0 -- itteration timer
   game.keySpeed = 0.25 -- keyboard repeat speed
   game.keyTimer = 0 -- keyboard repeat timer
-  game.trailsOn = false -- trails on
 
 
   -- welcome message
@@ -58,9 +61,8 @@ function love.load()
   -- =====================
   function randomiseBoard()
     for i, v in ipairs(organismsGroup) do
-      if love.math.random() > 0.8 then
-        v.isAlive = true
-      end
+      if love.math.random() > 0.8 then v.isAlive = true
+      else v.isAlive = false end
     end
   end
 
@@ -165,6 +167,16 @@ function love.update(dt)
 
   if love.keyboard.isDown("p") and game.keyTimer > game.keySpeed then
     printAllOrganisms()
+    game.keyTimer = 0
+  end
+
+  if love.keyboard.isDown("r") and game.keyTimer > game.keySpeed then
+    randomiseBoard()
+    game.isPaused = true
+    for i, v in ipairs(organismsGroup) do
+      v.hasbeenAlive = false
+      v.age = 0
+    end
     game.keyTimer = 0
   end
 end --love.update
