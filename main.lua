@@ -4,9 +4,9 @@ function love.load()
   -- grid dimensions
   -- ===============
   grid = {}
-  grid.cols = 16 * 6
-  grid.rows = 10 * 6
-  grid.size = 12 -- width & height of grid cells in pixels
+  grid.cols = 16 * 2
+  grid.rows = 10 * 2
+  grid.size = 32 -- width & height of grid cells in pixels
   grid.gutter = 4 -- size of gap between grid cells in pixels
 
   -- color definitions
@@ -65,8 +65,6 @@ function love.load()
       else v.isAlive = false end
     end
   end
-
-  randomiseBoard()
 
   -- count the alive neighbors of all organisms
   -- ==========================================
@@ -177,6 +175,15 @@ function love.update(dt)
       v.hasbeenAlive = false
       v.age = 0
     end
+    game.keyTimer = 0
+  end
+
+  -- pick up mouse event
+  if love.mouse.isDown("l") and game.keyTimer > game.keySpeed then
+    local mouseCol = math.floor(love.mouse.getX() / grid.size)
+    local mouseRow = math.floor(love.mouse.getY() / grid.size)
+    organismsGroup[mouseCol + (mouseRow * grid.cols) + 1].isAlive = true
+
     game.keyTimer = 0
   end
 end --love.update
